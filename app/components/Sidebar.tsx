@@ -1,46 +1,92 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+  LayoutDashboard,
+  Settings,
+  UserCircle,
+  LogIn,
+  UserPlus,
+  Home,
+  Bell,
+} from "lucide-react";
 import clsx from "clsx";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-  useEffect(() => {
-    const storedState = localStorage.getItem("sidebarOpen");
-    if (storedState !== null) {
-      setIsOpen(storedState === "true");
-    }
-  }, []);
+  const toggleSubmenu = (menu: string) => {
+    setOpenSubmenu(openSubmenu === menu ? null : menu);
+  };
 
-  useEffect(() => {
-    localStorage.setItem("sidebarOpen", String(isOpen));
-  }, [isOpen]);
+  const menuItems = [
+    { icon: <Home size={20} />, label: "Home" },
+    { icon: <LayoutDashboard size={20} />, label: "Dashboard" },
+    { icon: <Bell size={20} />, label: "Notifications" },
+    { icon: <UserCircle size={20} />, label: "Profile" },
+  ];
 
   return (
     <aside
       className={clsx(
-        "h-screen bg-gray-900 text-white p-4 transition-all duration-300 flex-shrink-0",
+        "h-screen bg-gray-900 text-white transition-all duration-300 flex-shrink-0 flex flex-col",
         isOpen ? "w-64" : "w-16"
       )}
     >
-      <button
-        className="absolute top-4 right-4 text-white"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-      {isOpen && (
-        <>
-          <h2 className="text-2xl font-bold">Sidebar</h2>
-          <ul className="mt-6 space-y-2">
-            <li className="hover:bg-gray-700 p-2 rounded">Dashboard</li>
-            <li className="hover:bg-gray-700 p-2 rounded">Settings</li>
-            <li className="hover:bg-gray-700 p-2 rounded">Profile</li>
-          </ul>
-        </>
-      )}
+      {/* Sidebar Header */}
+      <div className="p-4 border-b border-gray-800">
+        <button
+          className="text-white hover:bg-gray-800 p-2 rounded-lg transition-colors w-8 h-8 flex items-center justify-center"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Sidebar Content */}
+      <div className="flex-1 py-4 overflow-x-hidden">
+        <ul className="space-y-2 px-2">
+          {menuItems.map((item, index) => (
+            <li key={index}>
+              <button
+                className="w-full hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center whitespace-nowrap"
+              >
+                <span className="flex items-center min-w-[2rem] justify-center">
+                  {item.icon}
+                </span>
+                {isOpen && <span className="ml-3 text-sm">{item.label}</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Auth Links */}
+      <div className="border-t border-gray-800 p-2">
+        <div className="space-y-2">
+          <button
+            className="w-full hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center whitespace-nowrap"
+          >
+            <span className="flex items-center min-w-[2rem] justify-center">
+              <LogIn size={20} />
+            </span>
+            {isOpen && <span className="ml-3 text-sm">Login</span>}
+          </button>
+          <button
+            className="w-full hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center whitespace-nowrap"
+          >
+            <span className="flex items-center min-w-[2rem] justify-center">
+              <UserPlus size={20} />
+            </span>
+            {isOpen && <span className="ml-3 text-sm">Sign Up</span>}
+          </button>
+        </div>
+      </div>
     </aside>
   );
 }
